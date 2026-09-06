@@ -1,0 +1,41 @@
+# ─── Python ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ─── Virtual Environments ────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ─── macOS ────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ─── IDE ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Uploaded Images (temporary) ─────────────────────────────
+uploadimages/temp_*
+
+# ─── Large Model Files (use Git LFS or download separately) ──
+data/*.keras
+data/*.h5
+data/*.safetensors
+data/*.pt
+data/*.bin
+berth_model/
+*.safetensors
+*.keras
+
+# ─── Misc ─────────────────────────────────────────────────────
+*.log
+.env

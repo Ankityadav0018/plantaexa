@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  # Flask Web App — image upload & diagnosis
+  flask-app:
+    build: .
+    container_name: plantaexa-flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./uploadimages:/app/uploadimages
+    environment:
+      - FLASK_ENV=production
+    command: python app.py
+    restart: unless-stopped
+
+  # Streamlit Chatbot — dual-AI interactive chatbot
+  chatbot:
+    build: .
+    container_name: plantaexa-chatbot
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    command: streamlit run chatbot/app.py --server.port=8501 --server.address=0.0.0.0
+    restart: unless-stopped
