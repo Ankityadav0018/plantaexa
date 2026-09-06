@@ -49,7 +49,8 @@ plantDoc/
 │
 ├── data/                     # Model weights & datasets
 │   ├── plant_disease_recog_resenet50_pwp.keras
-│   └── plant_disease_text_model.keras
+│   ├── plant_disease_text_model.keras (Requires download)
+│   └── PlantDoc-Dataset/     # Image dataset for training
 │
 ├── static/                   # Flask web assets
 │   ├── css/style.css
@@ -72,8 +73,9 @@ plantDoc/
 ### Prerequisites
 
 - **Python 3.9+**
-- Pre-trained models in `data/` directory
-- BERT model files in `~/Desktop/infosis/berth_model/`
+- Pre-trained models in `data/` directory (`plant_disease_recog_resenet50_pwp.keras`)
+- `PlantDoc-Dataset` in `data/` directory (for training/evaluation)
+- BERT model files in `~/Desktop/infosis/berth_model/` (Required for chatbot text analysis)
 - CSV dataset at `~/Desktop/infosis/berth_model/plant_disease_dataset_10000.csv`
 
 ### Option 1: Flask Web App
