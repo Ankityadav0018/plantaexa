@@ -10,6 +10,7 @@ functionality to map predicted diseases to treatments.
 import csv
 import os
 from collections import defaultdict
+from typing import Optional
 
 
 class TreatmentLookup:
@@ -60,7 +61,7 @@ class TreatmentLookup:
                 "plant_name": ", ".join(sorted(data["plants"])) if data["plants"] else None,
             }
 
-    def lookup(self, disease_name: str) -> dict | None:
+    def lookup(self, disease_name: str) -> Optional[dict]:
         """
         Look up treatment info for a given disease.
 
