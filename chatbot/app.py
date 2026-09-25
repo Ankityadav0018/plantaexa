@@ -48,7 +48,9 @@ def load_image_model():
 
 @st.cache_resource(show_spinner=False)
 def load_text_model():
-    """Load and cache the BERT text classification model."""
+    """Load and cache the BERT text classification model (optional)."""
+    if not BERT_MODEL_DIR:
+        return None
     return TextPredictor(BERT_MODEL_DIR)
 
 
@@ -118,7 +120,7 @@ def main():
         with st.spinner("🌿 Loading AI models... This may take a moment on first run."):
             try:
                 image_predictor = load_image_model()
-                text_predictor = load_text_model()
+                text_predictor = load_text_model()  # May be None if BERT not available
                 treatment_db = load_treatment_db()
                 st.session_state.models_loaded = True
             except Exception as e:
@@ -130,8 +132,16 @@ def main():
                 st.stop()
     else:
         image_predictor = load_image_model()
-        text_predictor = load_text_model()
+        text_predictor = load_text_model()  # May be None
         treatment_db = load_treatment_db()
+
+    # Show notice if running in image-only mode
+    if not BERT_MODEL_DIR:
+        st.info(
+            "ℹ️ **Image-only mode** — BERT model not found. "
+            "Upload a leaf image for disease detection. "
+            "Text symptom analysis is unavailable."
+        )
 
     render_sidebar()
     render_header()
@@ -180,38 +190,44 @@ def main():
 
     # ─── Process Text Input ───────────────────────────────
     elif text_input:
-        st.session_state.chat_history.append(
-            {"role": "user", "content": text_input}
-        )
+        if text_predictor is None:
+            st.warning(
+                "⚠️ Text analysis is unavailable — BERT model not found. "
+                "Please upload a leaf image instead."
+            )
+        else:
+            st.session_state.chat_history.append(
+                {"role": "user", "content": text_input}
+            )
 
-        with st.spinner("🧠 Analyzing symptoms with BERT..."):
-            try:
-                prediction = text_predictor.predict(text_input)
-                disease_name = prediction["label"]
-                confidence = prediction["confidence"]
-                treatment_info = treatment_db.lookup(disease_name)
+            with st.spinner("🧠 Analyzing symptoms with BERT..."):
+                try:
+                    prediction = text_predictor.predict(text_input)
+                    disease_name = prediction["label"]
+                    confidence = prediction["confidence"]
+                    treatment_info = treatment_db.lookup(disease_name)
 
-                response_text = format_response(
-                    disease_name, confidence, treatment_info, source="Text (BERT)"
-                )
+                    response_text = format_response(
+                        disease_name, confidence, treatment_info, source="Text (BERT)"
+                    )
 
-                st.session_state.chat_history.append({
-                    "role": "assistant",
-                    "content": response_text,
-                    "extra": {
-                        "type": "prediction",
-                        "disease": disease_name,
-                        "confidence": confidence,
-                        "treatment": treatment_info,
-                        "model": "BERT",
-                    },
-                })
-            except Exception as e:
-                st.session_state.chat_history.append(
-                    {"role": "assistant", "content": f"❌ Text analysis failed: {str(e)}"}
-                )
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": response_text,
+                        "extra": {
+                            "type": "prediction",
+                            "disease": disease_name,
+                            "confidence": confidence,
+                            "treatment": treatment_info,
+                            "model": "BERT",
+                        },
+                    })
+                except Exception as e:
+                    st.session_state.chat_history.append(
+                        {"role": "assistant", "content": f"❌ Text analysis failed: {str(e)}"}
+                    )
 
-        st.rerun()
+            st.rerun()
 
 
 if __name__ == "__main__":

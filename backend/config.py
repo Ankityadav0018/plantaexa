@@ -11,17 +11,18 @@ BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(BACKEND_DIR)
 
 # ─── Model Paths ─────────────────────────────────────────────
-RESNET_MODEL_PATH = os.path.join(PROJECT_DIR, "data", "plant_disease_recog_resenet50_pwp.keras")
+RESNET_MODEL_PATH = os.path.join(PROJECT_DIR, "data", "patched_model.keras")
 
+# Optional: set to your BERT model directory if available
 BERT_MODEL_DIR = os.path.join(
     os.path.expanduser("~"), "Desktop", "infosis", "berth_model"
 )
+# If the BERT model directory doesn't exist, disable text mode
+if not os.path.isdir(BERT_MODEL_DIR):
+    BERT_MODEL_DIR = None
 
 # ─── Dataset Path ────────────────────────────────────────────
-CSV_DATA_PATH = os.path.join(
-    os.path.expanduser("~"), "Desktop", "infosis", "berth_model",
-    "plant_disease_dataset_10000.csv",
-)
+CSV_DATA_PATH = os.path.join(PROJECT_DIR, "data", "plant_disease_dataset.csv")
 
 # ─── Image Model Labels (39 PlantVillage classes) ────────────
 IMAGE_LABELS = [

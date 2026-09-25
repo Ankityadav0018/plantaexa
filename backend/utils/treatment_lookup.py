@@ -42,14 +42,19 @@ class TreatmentLookup:
         with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                disease = row.get("Disease_Name", "").strip()
+                # Support both column naming conventions
+                disease = (
+                    row.get("Disease_Name") or row.get("disease", "")
+                ).strip()
                 if not disease:
                     continue
 
                 data = disease_data[disease]
                 data["symptoms"].add(row.get("symptoms", "").strip())
                 data["treatment"].add(row.get("treatment", "").strip())
-                plant = row.get("plant_name", "").strip()
+                plant = (
+                    row.get("plant_name") or row.get("plant", "")
+                ).strip()
                 if plant:
                     data["plants"].add(plant)
 

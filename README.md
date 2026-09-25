@@ -1,9 +1,9 @@
-# 🌿 Plantaexa — Plant Disease Recognition System
+# 🌿 Plantaexa — Plant Disease Recognition Chatbot
 
-Plantaexa is an AI-powered plant disease recognition platform with two interfaces:
+Plantaexa is an AI-powered plant disease recognition chatbot built with **Streamlit**.  
+Upload a leaf image and get an instant disease diagnosis powered by a **ResNet50** deep learning model, with treatment recommendations from a curated disease database.
 
-1. **Flask Web App** (`app.py`) — Upload a leaf image via a premium glassmorphic UI → instant diagnosis.
-2. **Streamlit Chatbot** (`chatbot/app.py`) — Interactive dual-AI chatbot using ResNet50 (images) + BERT (text).
+> **Text symptom analysis (BERT)** is optional — the app runs in image-only mode if the BERT model is not available.
 
 ---
 
@@ -12,10 +12,10 @@ Plantaexa is an AI-powered plant disease recognition platform with two interface
 | Feature | Description |
 |---------|-------------|
 | 🖼️ **Image Analysis** | Upload a leaf photo → ResNet50 identifies the disease (39 classes) |
-| 💬 **Text Analysis** | Describe symptoms → BERT predicts the disease (7 classes) |
-| 🎯 **Confidence Scores** | Visual confidence indicators with color-coded levels |
-| 💊 **Treatment Recommendations** | Auto-maps predictions to treatments from CSV database |
-| 🎨 **Premium UI** | Dark/light themes, glassmorphism, neon accents, micro-animations |
+| 💬 **Text Analysis** | Describe symptoms → BERT predicts the disease (7 classes) *(optional)* |
+| 🎯 **Confidence Scores** | Color-coded confidence levels (High / Medium / Low) |
+| 💊 **Treatment Recommendations** | Auto-maps predictions to symptoms & treatments from CSV database |
+| 🎨 **Premium Chatbot UI** | Dark/light themes, glassmorphism, neon accents, micro-animations |
 | 🐳 **Docker Support** | One-command deployment with docker-compose |
 
 ---
@@ -23,47 +23,39 @@ Plantaexa is an AI-powered plant disease recognition platform with two interface
 ## 📁 Project Structure
 
 ```
-plantDoc/
-├── app.py                    # Flask web app (image upload & diagnosis)
-├── test_project.py           # Project test suite
-├── requirements.txt          # Python dependencies (all-in-one)
-├── Dockerfile                # Container build instructions
-├── docker-compose.yml        # Multi-service deployment
-├── LICENSE                   # MIT License
-├── README.md                 # This file
-│
-├── backend/                  # Shared ML backend code
-│   ├── config.py             # Paths, labels, model settings
-│   ├── models/
-│   │   ├── image_model.py    # ResNet50 image prediction pipeline
-│   │   └── text_model.py     # BERT text prediction pipeline
-│   └── utils/
-│       └── treatment_lookup.py  # CSV-based treatment recommendations
-│
-├── chatbot/                  # Streamlit dual-AI chatbot
-│   ├── app.py                # Streamlit entry point
-│   ├── README.md             # Chatbot-specific documentation
+plant_Doc_Bot-main/
+├── chatbot/                   # ← Main Streamlit chatbot app
+│   ├── app.py                 #   Entry point — run this with streamlit
+│   ├── README.md              #   Chatbot-specific documentation
 │   └── ui/
-│       ├── styles.py         # Custom CSS (dark/light themes)
-│       └── components.py     # UI components (header, chat, inputs)
+│       ├── components.py      #   UI components (header, chat messages, inputs)
+│       └── styles.py          #   Custom CSS (dark/light themes, animations)
 │
-├── data/                     # Model weights & datasets
-│   ├── plant_disease_recog_resenet50_pwp.keras
-│   ├── plant_disease_text_model.keras (Requires download)
-│   └── PlantDoc-Dataset/     # Image dataset for training
+├── backend/                   # Shared ML backend
+│   ├── config.py              #   Paths, labels, model settings
+│   ├── models/
+│   │   ├── image_model.py     #   ResNet50 image prediction pipeline
+│   │   └── text_model.py      #   BERT text prediction pipeline (optional)
+│   └── utils/
+│       ├── disease_loader.py  #   Loads disease info indexed by label
+│       └── treatment_lookup.py#   CSV-based treatment recommendations
 │
-├── static/                   # Flask web assets
-│   ├── css/style.css
-│   ├── js/bootstrap.bundle.min.js
-│   └── images/               # Backgrounds, logo
+├── data/                      # Model weights & dataset
+│   ├── patched_model.keras    #   ResNet50 model (39 PlantVillage classes)
+│   ├── plant_disease_dataset.csv  # Disease → symptoms & treatment database
+│   └── PlantDoc-Dataset/      #   Image dataset (train/test splits)
 │
-├── templates/                # Flask HTML templates
-│   └── home.html
+├── scripts/                   # Utility scripts
+│   ├── setup.sh               #   Environment setup helper
+│   ├── run_tests.sh           #   Run test suite
+│   └── clean_uploads.sh       #   Clear uploaded images
 │
-├── scripts/                  # Utility scripts
-├── notebooks/                # Jupyter notebooks
-├── material/                 # Reference materials
-└── uploadimages/             # Temporary upload directory
+├── uploadimages/              # Temporary image upload directory
+├── test_project.py            # Unit test suite
+├── requirements.txt           # Python dependencies
+├── Dockerfile                 # Container build instructions
+├── docker-compose.yml         # Multi-service deployment
+└── LICENSE                    # MIT License
 ```
 
 ---
@@ -73,40 +65,77 @@ plantDoc/
 ### Prerequisites
 
 - **Python 3.9+**
-- Pre-trained models in `data/` directory (`plant_disease_recog_resenet50_pwp.keras`)
-- `PlantDoc-Dataset` in `data/` directory (for training/evaluation)
-- BERT model files in `~/Desktop/infosis/berth_model/` (Required for chatbot text analysis)
-- CSV dataset at `~/Desktop/infosis/berth_model/plant_disease_dataset_10000.csv`
+- `data/patched_model.keras` — ResNet50 model file (see [Model Downloads](#-model-downloads))
+- `data/plant_disease_dataset.csv` — included in this repo
+- *(Optional)* BERT model directory for text symptom analysis
 
-### Option 1: Flask Web App
+### 1. Set Up Environment
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-
-python app.py
 ```
 
-Open **http://127.0.0.1:5000**
-
-### Option 2: Streamlit Chatbot
+### 2. Run the Chatbot
 
 ```bash
-source .venv/bin/activate
 streamlit run chatbot/app.py
 ```
 
-Open **http://localhost:8501**
+Open **http://localhost:8501** in your browser.
 
-### Option 3: Docker
+> **Image-only mode:** If the BERT model is not present, the app automatically runs in image-only mode and shows a notice. All image-based diagnosis features work normally.
+
+### 3. Docker (Optional)
 
 ```bash
 docker-compose up --build
 ```
 
-- Flask app → **http://localhost:5000**
-- Chatbot → **http://localhost:8501**
+Chatbot available at **http://localhost:8501**
+
+---
+
+## 🧠 Enabling Text Analysis (BERT)
+
+The text symptom analysis feature requires a fine-tuned BERT model for sequence classification.
+
+1. Place the BERT model files in:
+   ```
+   ~/Desktop/infosis/berth_model/
+   ├── config.json
+   ├── model.safetensors
+   ├── tokenizer.json
+   └── tokenizer_config.json
+   ```
+
+2. Restart the app — text mode will be automatically enabled.
+
+**BERT predicts 7 disease classes:** Aphids, Blight, Downy Mildew, Leaf Spot, Powdery Mildew, Root Rot, Rust
+
+---
+
+## 🌾 Supported Crops & Diseases
+
+The image model (ResNet50) recognizes **39 classes** across 14 crops:
+
+| Crop | Diseases Detected |
+|------|-------------------|
+| Apple | Apple Scab, Black Rot, Cedar Apple Rust, Healthy |
+| Blueberry | Healthy |
+| Cherry | Powdery Mildew, Healthy |
+| Corn | Cercospora Leaf Spot, Common Rust, Northern Leaf Blight, Healthy |
+| Grape | Black Rot, Esca (Black Measles), Leaf Blight, Healthy |
+| Orange | Huanglongbing (Citrus Greening) |
+| Peach | Bacterial Spot, Healthy |
+| Pepper | Bacterial Spot, Healthy |
+| Potato | Early Blight, Late Blight, Healthy |
+| Raspberry | Healthy |
+| Soybean | Healthy |
+| Squash | Powdery Mildew |
+| Strawberry | Leaf Scorch, Healthy |
+| Tomato | Bacterial Spot, Early Blight, Late Blight, Leaf Mold, Septoria Leaf Spot, Spider Mites, Target Spot, Yellow Leaf Curl Virus, Mosaic Virus, Healthy |
 
 ---
 
@@ -116,14 +145,18 @@ docker-compose up --build
 python test_project.py
 ```
 
+Tests cover: config imports, label format, CSV loading, treatment lookup, and image predictor label formatting.
+
 ---
 
-## 🛠️ Model Downloads
+## 📥 Model Downloads
 
-| Model | Size | Description |
-|-------|------|-------------|
-| [ResNet50 (.keras)](https://drive.google.com/file/d/1Ond7UzrNOfdAXWedjlZr2sDXYU6MRBuj/view?usp=sharing) | ~250 MB | 39 PlantVillage classes |
-| BERT Model | ~438 MB | 7 disease classes (Aphids, Blight, Downy Mildew, Leaf Spot, Powdery Mildew, Root Rot, Rust) |
+| Model | Size | Link |
+|-------|------|------|
+| ResNet50 `patched_model.keras` | ~24 MB | [Google Drive](https://drive.google.com/file/d/1Ond7UzrNOfdAXWedjlZr2sDXYU6MRBuj/view?usp=sharing) |
+| BERT text classifier | ~438 MB | Contact project maintainer |
+
+Place the ResNet50 model at `data/patched_model.keras` inside the project directory.
 
 ---
 
@@ -131,4 +164,7 @@ python test_project.py
 
 MIT License — see [LICENSE](LICENSE) for details.
 
-Built as part of the Infosis program.
+Built as part of the **Infosis Program** · © 2026 Plantaexa
+
+
+

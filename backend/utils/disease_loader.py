@@ -50,7 +50,8 @@ def load_disease_data(csv_path: str) -> list[dict]:
     if os.path.exists(csv_path):
         with open(csv_path, "r", encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                disease = row.get("Disease_Name", "").strip()
+                # Support both column naming conventions
+                disease = (row.get("Disease_Name") or row.get("disease", "")).strip()
                 if not disease:
                     continue
                 if disease not in disease_map:
