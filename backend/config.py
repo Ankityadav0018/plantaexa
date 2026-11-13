@@ -1,6 +1,6 @@
 """
 ╔══════════════════════════════════════════════════════════════╗
-║  Backend Configuration – Paths, Labels, and Settings         ║
+║  Plantaexa Backend Configuration – Paths, Labels, Settings   ║
 ╚══════════════════════════════════════════════════════════════╝
 """
 

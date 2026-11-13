@@ -67,7 +67,7 @@ def render_header():
                 <span style="width: 7px; height: 7px; background: {c['badge_color']};
                              border-radius: 50%; box-shadow: 0 0 8px {c['badge_color']};
                              display: inline-block;"></span>
-                AI Disease Diagnostics
+                Plantaexa • AI Disease Diagnostics
             </div>
         </div>
         """,
@@ -79,14 +79,13 @@ def render_header():
         <h1 style="text-align: center; font-family: 'Outfit', sans-serif;
                    font-size: 3.2rem; font-weight: 800; letter-spacing: -1.5px;
                    line-height: 1.1; color: {c['title_color']}; margin: 0 0 0.3rem 0;">
-            Plant health, powered by 
-            <span style="background: linear-gradient(135deg, {c['accent_from']}, {c['accent_to']});
+            🌿 <span style="background: linear-gradient(135deg, {c['accent_from']}, {c['accent_to']});
                          -webkit-background-clip: text; background-clip: text;
-                         -webkit-text-fill-color: transparent;">AI.</span>
+                         -webkit-text-fill-color: transparent;">Plantaexa</span>
         </h1>
         <p style="text-align: center; font-size: 1.05rem; color: {c['subtitle_color']};
                   font-weight: 300; margin-bottom: 1.5rem;">
-            Upload a leaf photo — our ResNet50 model will diagnose plant diseases instantly.
+            Plant health, powered by AI — upload a leaf photo to diagnose diseases instantly.
         </p>
         """,
         unsafe_allow_html=True,
@@ -118,8 +117,8 @@ def render_chat_message(role: str, content: str, extra: dict = None):
         # Show confidence bar for assistant predictions
         if extra and extra.get("type") == "prediction":
             conf = extra.get("confidence", 0)
-            model_name = extra.get("model", "AI")
-            st.progress(conf, text=f"🎯 {model_name} Confidence: {conf*100:.1f}%")
+            model_name = extra.get("model", "ResNet50")
+            st.progress(conf, text=f"🎯 Plantaexa ({model_name}) Confidence: {conf*100:.1f}%")
 
 
 def render_input_area():
@@ -130,7 +129,7 @@ def render_input_area():
 
     uploaded_image = None
 
-    st.caption("📷 Upload a clear photo of the affected plant leaf (PNG, JPG, JPEG).")
+    st.caption("📷 Upload a clear photo of the affected plant leaf for Plantaexa to analyze (PNG, JPG, JPEG).")
 
     uploaded_file = st.file_uploader(
         "Upload leaf image",
@@ -169,12 +168,12 @@ def render_sidebar():
             <div style="text-align: center; padding: 1rem 0 0.5rem;">
                 <h2 style="font-family: 'Outfit', sans-serif; font-weight: 800; 
                            letter-spacing: 2px; margin-bottom: 0; color: {c['brand_color']};">
-                    Plantaexa<span style="background: linear-gradient(135deg, {c['accent_from']}, {c['accent_to']}); 
+                    🌿 <span style="background: linear-gradient(135deg, {c['accent_from']}, {c['accent_to']}); 
                     -webkit-background-clip: text; background-clip: text; 
-                    -webkit-text-fill-color: transparent;">.AI</span>
+                    -webkit-text-fill-color: transparent;">Plantaexa</span>
                 </h2>
                 <p style="color: {c['card_muted']}; font-size: 0.8rem; margin-top: 4px;">
-                    Plant Disease Diagnostic Bot
+                    Plantaexa Disease Diagnostics
                 </p>
             </div>
             """,
@@ -239,17 +238,17 @@ def render_sidebar():
         st.divider()
 
         # ── Help ──
-        with st.expander("💡 How to use", expanded=False):
+        with st.expander("💡 How to use Plantaexa", expanded=False):
             st.markdown(
                 """
-**Image Analysis (ResNet50):**
+**Plantaexa Image Analysis (ResNet50):**
 1. Upload a clear leaf photo (PNG, JPG)
 2. Click **Analyze 🔬**
 3. Review the disease detected, confidence level, and recommended treatment.
 """
             )
 
-        with st.expander("📊 Supported Diseases", expanded=False):
+        with st.expander("📊 Plantaexa Supported Diseases", expanded=False):
             st.markdown(
                 """
 **ResNet50 Image Model (39 classes):**

@@ -73,10 +73,10 @@ def format_response(disease_name, confidence, treatment_info, source="ResNet50")
         conf_emoji, conf_label = "🔴", "Low"
 
     lines = [
-        f"### 🌿 Disease Detected: **{disease_name}**",
+        f"### 🌿 Plantaexa Diagnosis: **{disease_name}**",
         "",
         f"**Confidence:** {conf_emoji} {conf_pct} ({conf_label})",
-        f"**Analysis Model:** {source}",
+        f"**Analysis Model:** Plantaexa ({source})",
     ]
 
     if treatment_info:
@@ -107,7 +107,7 @@ def main():
     init_session_state()
 
     if not st.session_state.models_loaded:
-        with st.spinner("🌿 Loading AI model... This may take a moment on first run."):
+        with st.spinner("🌿 Plantaexa: Loading AI model... This may take a moment on first run."):
             try:
                 image_predictor = load_image_model()
                 treatment_db = load_treatment_db()
@@ -139,7 +139,7 @@ def main():
             "extra": {"type": "image", "image": uploaded_image},
         })
 
-        with st.spinner("🔬 Analyzing leaf image with ResNet50..."):
+        with st.spinner("🔬 Plantaexa is analyzing leaf image with ResNet50..."):
             try:
                 prediction = image_predictor.predict(uploaded_image)
                 disease_name = prediction["label"]

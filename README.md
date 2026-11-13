@@ -22,7 +22,7 @@ Upload a leaf image and get an instant disease diagnosis powered by a **ResNet50
 ## 📁 Project Structure
 
 ```
-plant_Doc_Bot-main/
+plantaexa/
 ├── chatbot/                   # ← Main Streamlit chatbot app
 │   ├── app.py                 #   Entry point — run this with streamlit
 │   ├── README.md              #   Chatbot-specific documentation
