@@ -67,7 +67,7 @@ def render_header():
                 <span style="width: 7px; height: 7px; background: {c['badge_color']};
                              border-radius: 50%; box-shadow: 0 0 8px {c['badge_color']};
                              display: inline-block;"></span>
-                Dual-AI Diagnostics
+                AI Disease Diagnostics
             </div>
         </div>
         """,
@@ -86,7 +86,7 @@ def render_header():
         </h1>
         <p style="text-align: center; font-size: 1.05rem; color: {c['subtitle_color']};
                   font-weight: 300; margin-bottom: 1.5rem;">
-            Upload a leaf image or describe symptoms — our AI will diagnose instantly.
+            Upload a leaf photo — our ResNet50 model will diagnose plant diseases instantly.
         </p>
         """,
         unsafe_allow_html=True,
@@ -124,61 +124,38 @@ def render_chat_message(role: str, content: str, extra: dict = None):
 
 def render_input_area():
     """
-    Render the input area with text box and file uploader in tabs.
+    Render the image upload input area.
     """
     st.divider()
 
-    tab_text, tab_image = st.tabs(["💬 Describe Symptoms", "📷 Upload Leaf Image"])
-
-    text_input = None
     uploaded_image = None
 
-    with tab_text:
-        st.caption("Describe what you see on the plant leaves — discoloration, spots, wilting, etc.")
+    st.caption("📷 Upload a clear photo of the affected plant leaf (PNG, JPG, JPEG).")
 
-        text_val = st.text_input(
-            "Symptom description",
-            placeholder="e.g., Yellow patches on tomato leaves with white powder...",
-            key="text_input_field",
-            label_visibility="collapsed",
-        )
+    uploaded_file = st.file_uploader(
+        "Upload leaf image",
+        type=["png", "jpg", "jpeg"],
+        key="image_upload_field",
+        label_visibility="collapsed",
+    )
 
-        col1, col2 = st.columns([5, 1])
+    if uploaded_file is not None:
+        col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            text_submit = st.button(
-                "Analyze 🧠", key="text_submit", use_container_width=True
+            preview_img = Image.open(uploaded_file)
+            st.image(preview_img, caption="Preview", use_container_width=True)
+            uploaded_file.seek(0)
+
+        col_a, col_b = st.columns([5, 1])
+        with col_b:
+            img_submit = st.button(
+                "Analyze 🔬", key="image_submit", use_container_width=True
             )
 
-        if text_submit and text_val and text_val.strip():
-            text_input = text_val.strip()
+        if img_submit:
+            uploaded_image = uploaded_file
 
-    with tab_image:
-        st.caption("Upload a clear photo of the affected plant leaf (PNG, JPG).")
-
-        uploaded_file = st.file_uploader(
-            "Upload leaf image",
-            type=["png", "jpg", "jpeg"],
-            key="image_upload_field",
-            label_visibility="collapsed",
-        )
-
-        if uploaded_file is not None:
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                preview_img = Image.open(uploaded_file)
-                st.image(preview_img, caption="Preview", use_container_width=True)
-                uploaded_file.seek(0)
-
-            col_a, col_b = st.columns([5, 1])
-            with col_b:
-                img_submit = st.button(
-                    "Analyze 🔬", key="image_submit", use_container_width=True
-                )
-
-            if img_submit:
-                uploaded_image = uploaded_file
-
-    return text_input, uploaded_image
+    return uploaded_image
 
 
 def render_sidebar():
@@ -197,7 +174,7 @@ def render_sidebar():
                     -webkit-text-fill-color: transparent;">.AI</span>
                 </h2>
                 <p style="color: {c['card_muted']}; font-size: 0.8rem; margin-top: 4px;">
-                    Unified Plant Disease Chatbot
+                    Plant Disease Diagnostic Bot
                 </p>
             </div>
             """,
@@ -229,7 +206,7 @@ def render_sidebar():
         st.divider()
 
         # ── Model Info ──
-        st.markdown("##### 🤖 Active Models")
+        st.markdown("##### 🤖 Active Model")
 
         st.markdown(
             f"""
@@ -242,16 +219,6 @@ def render_sidebar():
                 </div>
                 <div style="font-size: 0.95rem; color: {c['card_text']}; font-weight: 600;">ResNet50</div>
                 <div style="font-size: 0.75rem; color: {c['card_muted']};">39 disease classes • PlantVillage</div>
-            </div>
-            <div style="background: {c['card_bg_cyan']}; 
-                        border: 1px solid {c['card_border_cyan']};
-                        border-radius: 10px; padding: 14px;">
-                <div style="font-size: 0.75rem; color: {c['accent_to']}; font-weight: 700; 
-                            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
-                    💬 Text Model
-                </div>
-                <div style="font-size: 0.95rem; color: {c['card_text']}; font-weight: 600;">BERT (Transformers)</div>
-                <div style="font-size: 0.75rem; color: {c['card_muted']};">7 disease classes • Symptom-based</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -276,28 +243,20 @@ def render_sidebar():
             st.markdown(
                 """
 **Image Analysis (ResNet50):**
-1. Click "📷 Upload Leaf Image" tab
-2. Upload a clear leaf photo
-3. Click **Analyze 🔬**
-
-**Text Analysis (BERT):**
-1. Click "💬 Describe Symptoms" tab
-2. Type symptoms like *"white powder on leaves"*
-3. Click **Analyze 🧠**
+1. Upload a clear leaf photo (PNG, JPG)
+2. Click **Analyze 🔬**
+3. Review the disease detected, confidence level, and recommended treatment.
 """
             )
 
         with st.expander("📊 Supported Diseases", expanded=False):
             st.markdown(
                 """
-**BERT Text Model (7 classes):**
-- Aphids · Blight · Downy Mildew
-- Leaf Spot · Powdery Mildew
-- Root Rot · Rust
-
 **ResNet50 Image Model (39 classes):**
-Apple Scab, Black Rot, Cedar Rust,
-Powdery Mildew, Leaf Blight,
-Bacterial Spot, and many more.
+Apple Scab, Black Rot, Cedar Apple Rust,
+Powdery Mildew, Leaf Blight, Early Blight,
+Late Blight, Bacterial Spot, Leaf Mold,
+Septoria Leaf Spot, Spider Mites, Yellow Leaf Curl,
+Mosaic Virus, and healthy plant states.
 """
             )

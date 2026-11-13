@@ -1,1 +1,1 @@
-"""ML model wrappers for image and text prediction."""
+"""ML model wrappers for plant disease image prediction."""

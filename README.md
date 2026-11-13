@@ -3,7 +3,7 @@
 Plantaexa is an AI-powered plant disease recognition chatbot built with **Streamlit**.  
 Upload a leaf image and get an instant disease diagnosis powered by a **ResNet50** deep learning model, with treatment recommendations from a curated disease database.
 
-> **Text symptom analysis (BERT)** is optional — the app runs in image-only mode if the BERT model is not available.
+> Upload a leaf image to get an instant disease diagnosis and treatment recommendations.
 
 ---
 
@@ -12,11 +12,10 @@ Upload a leaf image and get an instant disease diagnosis powered by a **ResNet50
 | Feature | Description |
 |---------|-------------|
 | 🖼️ **Image Analysis** | Upload a leaf photo → ResNet50 identifies the disease (39 classes) |
-| 💬 **Text Analysis** | Describe symptoms → BERT predicts the disease (7 classes) *(optional)* |
 | 🎯 **Confidence Scores** | Color-coded confidence levels (High / Medium / Low) |
 | 💊 **Treatment Recommendations** | Auto-maps predictions to symptoms & treatments from CSV database |
 | 🎨 **Premium Chatbot UI** | Dark/light themes, glassmorphism, neon accents, micro-animations |
-| 🐳 **Docker Support** | One-command deployment with docker-compose |
+| 🐳 **Docker Support** | One-command deployment with docker-compose | 
 
 ---
 
@@ -34,8 +33,7 @@ plant_Doc_Bot-main/
 ├── backend/                   # Shared ML backend
 │   ├── config.py              #   Paths, labels, model settings
 │   ├── models/
-│   │   ├── image_model.py     #   ResNet50 image prediction pipeline
-│   │   └── text_model.py      #   BERT text prediction pipeline (optional)
+│   │   └── image_model.py     #   ResNet50 image prediction pipeline
 │   └── utils/
 │       ├── disease_loader.py  #   Loads disease info indexed by label
 │       └── treatment_lookup.py#   CSV-based treatment recommendations
@@ -54,7 +52,7 @@ plant_Doc_Bot-main/
 ├── test_project.py            # Unit test suite
 ├── requirements.txt           # Python dependencies
 ├── Dockerfile                 # Container build instructions
-├── docker-compose.yml         # Multi-service deployment
+├── docker-compose.yml         # Container deployment
 └── LICENSE                    # MIT License
 ```
 
@@ -67,7 +65,6 @@ plant_Doc_Bot-main/
 - **Python 3.9+**
 - `data/patched_model.keras` — ResNet50 model file (see [Model Downloads](#-model-downloads))
 - `data/plant_disease_dataset.csv` — included in this repo
-- *(Optional)* BERT model directory for text symptom analysis
 
 ### 1. Set Up Environment
 
@@ -85,8 +82,6 @@ streamlit run chatbot/app.py
 
 Open **http://localhost:8501** in your browser.
 
-> **Image-only mode:** If the BERT model is not present, the app automatically runs in image-only mode and shows a notice. All image-based diagnosis features work normally.
-
 ### 3. Docker (Optional)
 
 ```bash
@@ -94,25 +89,6 @@ docker-compose up --build
 ```
 
 Chatbot available at **http://localhost:8501**
-
----
-
-## 🧠 Enabling Text Analysis (BERT)
-
-The text symptom analysis feature requires a fine-tuned BERT model for sequence classification.
-
-1. Place the BERT model files in:
-   ```
-   ~/Desktop/infosis/berth_model/
-   ├── config.json
-   ├── model.safetensors
-   ├── tokenizer.json
-   └── tokenizer_config.json
-   ```
-
-2. Restart the app — text mode will be automatically enabled.
-
-**BERT predicts 7 disease classes:** Aphids, Blight, Downy Mildew, Leaf Spot, Powdery Mildew, Root Rot, Rust
 
 ---
 
@@ -154,12 +130,10 @@ Tests cover: config imports, label format, CSV loading, treatment lookup, and im
 | Model | Size | Link |
 |-------|------|------|
 | ResNet50 `patched_model.keras` | ~24 MB | [Google Drive](https://drive.google.com/file/d/1Ond7UzrNOfdAXWedjlZr2sDXYU6MRBuj/view?usp=sharing) |
-| BERT text classifier | ~438 MB | Contact project maintainer |
 
 Place the ResNet50 model at `data/patched_model.keras` inside the project directory.
 
----
-
+---                             
 ## 📄 License
 
 MIT License — see [LICENSE](LICENSE) for details.
@@ -168,3 +142,4 @@ Built as part of the **Infosis Program** · © 2026 Plantaexa
 
 
 
+                                                

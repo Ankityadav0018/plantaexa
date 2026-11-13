@@ -13,14 +13,6 @@ PROJECT_DIR = os.path.dirname(BACKEND_DIR)
 # ─── Model Paths ─────────────────────────────────────────────
 RESNET_MODEL_PATH = os.path.join(PROJECT_DIR, "data", "patched_model.keras")
 
-# Optional: set to your BERT model directory if available
-BERT_MODEL_DIR = os.path.join(
-    os.path.expanduser("~"), "Desktop", "infosis", "berth_model"
-)
-# If the BERT model directory doesn't exist, disable text mode
-if not os.path.isdir(BERT_MODEL_DIR):
-    BERT_MODEL_DIR = None
-
 # ─── Dataset Path ────────────────────────────────────────────
 CSV_DATA_PATH = os.path.join(PROJECT_DIR, "data", "plant_disease_dataset.csv")
 
@@ -66,19 +58,6 @@ IMAGE_LABELS = [
     "Tomato___Tomato_mosaic_virus",
     "Tomato___healthy",
 ]
-
-# ─── BERT Disease Label Mapping (7 classes) ──────────────────
-# Verified by running all 7 known symptom texts through the model.
-# Each symptom maps to its correct disease at 100% confidence.
-BERT_LABEL_MAP = {
-    0: "Aphids",
-    1: "Blight",
-    2: "Downy Mildew",
-    3: "Leaf Spot",
-    4: "Powdery Mildew",
-    5: "Root Rot",
-    6: "Rust",
-}
 
 # ─── Image Preprocessing Config ──────────────────────────────
 IMAGE_TARGET_SIZE = (160, 160)

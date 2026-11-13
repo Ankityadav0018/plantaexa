@@ -84,6 +84,10 @@ class TreatmentLookup:
 
         name_lower = disease_name.lower().strip()
 
+        # 0. Skip healthy plants — no treatment needed
+        if "healthy" in name_lower:
+            return None
+
         # 1. Direct lookup
         if name_lower in self.treatments:
             return self.treatments[name_lower]

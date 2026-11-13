@@ -20,8 +20,6 @@ class TestConfig(unittest.TestCase):
     def test_config_imports(self):
         """Config module should be importable."""
         from backend.config import (
-            BERT_LABEL_MAP,
-            BERT_MODEL_DIR,
             CSV_DATA_PATH,
             IMAGE_LABELS,
             IMAGE_TARGET_SIZE,
@@ -30,8 +28,6 @@ class TestConfig(unittest.TestCase):
         )
         self.assertIsInstance(IMAGE_LABELS, list)
         self.assertEqual(len(IMAGE_LABELS), 39)
-        self.assertIsInstance(BERT_LABEL_MAP, dict)
-        self.assertEqual(len(BERT_LABEL_MAP), 7)
         self.assertEqual(IMAGE_TARGET_SIZE, (160, 160))
 
     def test_label_format(self):
@@ -40,12 +36,6 @@ class TestConfig(unittest.TestCase):
         for label in IMAGE_LABELS:
             self.assertIsInstance(label, str)
             self.assertGreater(len(label), 0)
-
-    def test_bert_label_map_consistency(self):
-        """BERT label map should have sequential indices starting from 0."""
-        from backend.config import BERT_LABEL_MAP
-        expected_keys = list(range(len(BERT_LABEL_MAP)))
-        self.assertEqual(sorted(BERT_LABEL_MAP.keys()), expected_keys)
 
 
 class TestDataPaths(unittest.TestCase):
@@ -64,15 +54,8 @@ class TestDataPaths(unittest.TestCase):
         from backend.config import RESNET_MODEL_PATH
         self.assertTrue(
             os.path.exists(RESNET_MODEL_PATH),
-            f"ResNet model not found at: {RESNET_MODEL_PATH}",
-        )
-
-    def test_bert_model_dir_exists(self):
-        """BERT model directory should exist."""
-        from backend.config import BERT_MODEL_DIR
-        self.assertTrue(
-            os.path.isdir(BERT_MODEL_DIR),
-            f"BERT model directory not found at: {BERT_MODEL_DIR}",
+            f"ResNet model not found at: {RESNET_MODEL_PATH}\n"
+            "Ensure model file is present in the data/ folder.",
         )
 
 

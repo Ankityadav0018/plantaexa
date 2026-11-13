@@ -17,8 +17,8 @@ COPY . .
 # Create upload directory
 RUN mkdir -p uploadimages
 
-# Expose ports for Flask and Streamlit
-EXPOSE 5000 8501
+# Expose port for Streamlit
+EXPOSE 8501
 
-# Default: run Flask app
-CMD ["python", "app.py"]
+# Default: run the Streamlit chatbot
+CMD ["streamlit", "run", "chatbot/app.py", "--server.port=8501", "--server.address=0.0.0.0"]

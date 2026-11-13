@@ -1,7 +1,7 @@
 """
 ╔══════════════════════════════════════════════════════════════╗
-║  Plantaexa – Unified Plant Disease Diagnostic Chatbot       ║
-║  Integrates ResNet50 (Image) + BERT (Text) Models           ║
+║  Plantaexa – Plant Disease Diagnostic Chatbot               ║
+║  Powered by ResNet50 Deep Learning Image Classification      ║
 ║  Built with Streamlit for interactive chatbot-style UI       ║
 ╚══════════════════════════════════════════════════════════════╝
 """
@@ -17,14 +17,12 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from backend.config import (
-    BERT_MODEL_DIR,
     CSV_DATA_PATH,
     IMAGE_LABELS,
     PAGE_CONFIG,
     RESNET_MODEL_PATH,
 )
 from backend.models.image_model import ImagePredictor
-from backend.models.text_model import TextPredictor
 from backend.utils.treatment_lookup import TreatmentLookup
 from chatbot.ui.components import (
     render_chat_message,
@@ -47,14 +45,6 @@ def load_image_model():
 
 
 @st.cache_resource(show_spinner=False)
-def load_text_model():
-    """Load and cache the BERT text classification model (optional)."""
-    if not BERT_MODEL_DIR:
-        return None
-    return TextPredictor(BERT_MODEL_DIR)
-
-
-@st.cache_resource(show_spinner=False)
 def load_treatment_db():
     """Load and cache the treatment recommendation database."""
     return TreatmentLookup(CSV_DATA_PATH)
@@ -71,7 +61,7 @@ def init_session_state():
 
 
 # ─── Response Formatter ──────────────────────────────────────
-def format_response(disease_name, confidence, treatment_info, source):
+def format_response(disease_name, confidence, treatment_info, source="ResNet50"):
     """Format a unified, user-friendly response string."""
     conf_pct = f"{confidence * 100:.1f}%"
 
@@ -117,31 +107,21 @@ def main():
     init_session_state()
 
     if not st.session_state.models_loaded:
-        with st.spinner("🌿 Loading AI models... This may take a moment on first run."):
+        with st.spinner("🌿 Loading AI model... This may take a moment on first run."):
             try:
                 image_predictor = load_image_model()
-                text_predictor = load_text_model()  # May be None if BERT not available
                 treatment_db = load_treatment_db()
                 st.session_state.models_loaded = True
             except Exception as e:
-                st.error(f"❌ Failed to load models: {str(e)}")
+                st.error(f"❌ Failed to load model: {str(e)}")
                 st.info(
-                    "💡 Make sure all model files are in the correct paths. "
+                    "💡 Make sure the ResNet50 model file exists in data/ folder. "
                     "Check the README for setup instructions."
                 )
                 st.stop()
     else:
         image_predictor = load_image_model()
-        text_predictor = load_text_model()  # May be None
         treatment_db = load_treatment_db()
-
-    # Show notice if running in image-only mode
-    if not BERT_MODEL_DIR:
-        st.info(
-            "ℹ️ **Image-only mode** — BERT model not found. "
-            "Upload a leaf image for disease detection. "
-            "Text symptom analysis is unavailable."
-        )
 
     render_sidebar()
     render_header()
@@ -149,7 +129,7 @@ def main():
     for msg in st.session_state.chat_history:
         render_chat_message(msg["role"], msg["content"], msg.get("extra"))
 
-    text_input, uploaded_image = render_input_area()
+    uploaded_image = render_input_area()
 
     # ─── Process Image Input ──────────────────────────────
     if uploaded_image is not None:
@@ -167,7 +147,7 @@ def main():
                 treatment_info = treatment_db.lookup(disease_name)
 
                 response_text = format_response(
-                    disease_name, confidence, treatment_info, source="Image (ResNet50)"
+                    disease_name, confidence, treatment_info, source="ResNet50"
                 )
 
                 st.session_state.chat_history.append({
@@ -187,47 +167,6 @@ def main():
                 )
 
         st.rerun()
-
-    # ─── Process Text Input ───────────────────────────────
-    elif text_input:
-        if text_predictor is None:
-            st.warning(
-                "⚠️ Text analysis is unavailable — BERT model not found. "
-                "Please upload a leaf image instead."
-            )
-        else:
-            st.session_state.chat_history.append(
-                {"role": "user", "content": text_input}
-            )
-
-            with st.spinner("🧠 Analyzing symptoms with BERT..."):
-                try:
-                    prediction = text_predictor.predict(text_input)
-                    disease_name = prediction["label"]
-                    confidence = prediction["confidence"]
-                    treatment_info = treatment_db.lookup(disease_name)
-
-                    response_text = format_response(
-                        disease_name, confidence, treatment_info, source="Text (BERT)"
-                    )
-
-                    st.session_state.chat_history.append({
-                        "role": "assistant",
-                        "content": response_text,
-                        "extra": {
-                            "type": "prediction",
-                            "disease": disease_name,
-                            "confidence": confidence,
-                            "treatment": treatment_info,
-                            "model": "BERT",
-                        },
-                    })
-                except Exception as e:
-                    st.session_state.chat_history.append(
-                        {"role": "assistant", "content": f"❌ Text analysis failed: {str(e)}"}
-                    )
-
-            st.rerun()
 
 
 if __name__ == "__main__":
